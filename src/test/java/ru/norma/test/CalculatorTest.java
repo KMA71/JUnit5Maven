@@ -22,13 +22,24 @@ class CalculatorTest {
         calculator = new Calculator();
     }
 
+/*
+    можно запускать тесты по тэгу (для экономии времени, когда не нужен полный прогон)
+    для этого в pom-файле в плагине maven-surefire-plugin добавляем
+    <properties>
+        <includeTags>critical</includeTags>
+        <excludeTags>slow</excludeTags>
+    </properties>
+    где critical, это указаннный тэг в аннотации @Tag
+*/
     @Test
+    @Tag("critical")
     @DisplayName("Верное сложение двух положительных")
     void addTwoPositiveResPos() {
         assertEquals(calculator.add(1, 6), 7);
     }
 
     @Test
+    @Tag("slow")
     @DisplayName("Неверное сложение двух положительных")
     void addTwoPositiveResNeg() {
         assertNotEquals(calculator.add(1, 6), 5);
