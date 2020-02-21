@@ -1,6 +1,9 @@
 package ru.norma.test;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -9,6 +12,8 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
+
+@Execution(ExecutionMode.CONCURRENT)
 class CalculatorTest {
 
     private Calculator calculator;
@@ -35,6 +40,7 @@ class CalculatorTest {
     @Tag("critical")
     @DisplayName("Верное сложение двух положительных")
     void addTwoPositiveResPos() {
+        System.out.println(Thread.currentThread().getName());
         assertEquals(calculator.add(1, 6), 7);
     }
 
@@ -42,30 +48,35 @@ class CalculatorTest {
     @Tag("slow")
     @DisplayName("Неверное сложение двух положительных")
     void addTwoPositiveResNeg() {
+        System.out.println(Thread.currentThread().getName());
         assertNotEquals(calculator.add(1, 6), 5);
     }
 
     @Test
     @DisplayName("Верное сложение двух отрицательных")
     void addTwoNegativeResPos() {
+        System.out.println(Thread.currentThread().getName());
         assertEquals(calculator.add(-10, -5), -15);
     }
 
     @Test
     @DisplayName("Неверное сложение двух отрицательных")
     void addTwoNegativeResNeg() {
+        System.out.println(Thread.currentThread().getName());
         assertNotEquals(calculator.add(-10, -5), -5);
     }
 
     @Test
     @DisplayName("Верное сложение чисел с разным знаком")
     void addOppositeResPos() {
+        System.out.println(Thread.currentThread().getName());
         assertEquals(calculator.add(-5, 11), 6);
     }
 
     @Test
     @DisplayName("Неверное сложение чисел с разным знаком")
     void addOppositeResNeg() {
+        System.out.println(Thread.currentThread().getName());
         assertNotEquals(calculator.add(5, -11), 17);
     }
 
@@ -76,6 +87,7 @@ class CalculatorTest {
     //CsvSource - какой набор параметров передаётся в x и y
     @CsvSource({"1,2", "3,4", "-5, 10"})
     void addMultiParametersResPos(int x, int y) {
+        System.out.println(Thread.currentThread().getName());
         assertTrue(calculator.add(x, y) > 0 );
     }
 
@@ -84,6 +96,7 @@ class CalculatorTest {
     @DisplayName("Динамические мультипараметры")
     @MethodSource("intProvider")
     void addDynamicMultiParametersResPos(int x, int y) {
+        System.out.println(Thread.currentThread().getName());
         assertTrue(calculator.add(x, y) > 0 );
     }
 
@@ -93,6 +106,7 @@ class CalculatorTest {
         @Test
         @DisplayName("Верная разность двух положительных")
         void diffTwoPositiveResPos() {
+            System.out.println(Thread.currentThread().getName());
             assertEquals(calculator.diff(1, 6), -5);
         }
 
@@ -101,6 +115,7 @@ class CalculatorTest {
         void diffTwoPositiveResNeg() {
             //запускать тест, только при выполнении условия, в данном случае, количество процессоров от 4
             //иначе тест игнорируется
+            System.out.println(Thread.currentThread().getName());
             Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() >= 4);
 
             assertNotEquals(calculator.diff(1, 6), 5);
@@ -109,6 +124,7 @@ class CalculatorTest {
         //автоматическая генерация тестов
         @TestFactory
         Stream<DynamicTest> dynamicTests() {
+            System.out.println(Thread.currentThread().getName());
             return Stream.generate(Math::random)
                     .limit(100)
                     .mapToInt(v -> (int) (v * 1000))
@@ -122,6 +138,7 @@ class CalculatorTest {
     @Test
     void divideSecondZeroExceptionThrow() {
         Exception ex = assertThrows(Exception.class, () -> calculator.divide(5,0));
+        System.out.println(Thread.currentThread().getName());
         assertEquals(ex.getMessage(), "/ by zero", "Invalid error message received");
     }
 }
